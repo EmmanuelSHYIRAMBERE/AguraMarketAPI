@@ -81,11 +81,15 @@ import productImagesUpload from "../middleware/productMulter";
  *         location:
  *           type: string
  *           description: The updated address of the user
+ *         expoPushToken:
+ *           type: string
+ *           description: The updated expoPushToken of the user
  *       example:
  *         fullNames: Updated User Names
  *         profilePicture: https://example.com/new-profile-picture.jpg
  *         phoneNo: "+25070000001"
  *         location: Updated Address
+ *         expoPushToken: Updated expoPushToken
  */
 
 /**

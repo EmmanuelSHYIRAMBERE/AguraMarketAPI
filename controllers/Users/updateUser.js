@@ -20,6 +20,7 @@ export const updateUser = catchAsyncError(async (req, res, next) => {
   user.profilePicture = req.body.profilePicture || user.profilePicture;
   user.phoneNo = req.body.phoneNo || user.phoneNo;
   user.location = req.body.location || user.location;
+  user.expoPushToken = req.body.expoPushToken || user.expoPushToken;
 
   await user.save();
 
@@ -30,6 +31,7 @@ export const updateUser = catchAsyncError(async (req, res, next) => {
     phoneNo: user.phoneNo,
     location: user.location,
     profilePicture: user.profilePicture,
+    expoPushToken: user.expoPushToken,
     role: user.role,
   };
 
