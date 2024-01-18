@@ -30,6 +30,10 @@ const productSchema = mongoose.Schema({
     type: String,
     required: false,
   },
+  status: {
+    type: String,
+    default: "available",
+  },
   dateCreated: {
     type: Date,
     default: Date.now,

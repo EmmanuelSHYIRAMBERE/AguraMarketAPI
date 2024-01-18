@@ -6,7 +6,7 @@ export const getAllProducts = catchAsyncError(async (req, res, next) => {
   const products = await Product.find();
 
   if (!products || products.length === 0) {
-    return next(new errorHandler(`You don't have any product registered`, 404));
+    return next(new errorHandler(`There's no any product registered`, 404));
   }
 
   const formattedProducts = products.map((product) => ({

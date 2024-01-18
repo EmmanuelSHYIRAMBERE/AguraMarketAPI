@@ -1,12 +1,23 @@
 import express from "express";
-import { addNewProduct, getAllProducts } from "../controllers/Product";
+import {
+  addNewProduct,
+  deleteProduct,
+  getAllProducts,
+  getUserProducts,
+} from "../controllers/Product";
 import productImagesUpload from "../middleware/productMulter";
+import { verifyToken } from "../middleware";
 
 const productsRouter = express.Router();
 
 /**
  * @swagger
  * components:
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  *   schemas:
  *     products:
  *       type: object
@@ -15,7 +26,6 @@ const productsRouter = express.Router();
  *         - images
  *         - price
  *         - categoryId
- *         - userId
  *         - location
  *         - description
  *       properties:
@@ -38,10 +48,6 @@ const productsRouter = express.Router();
  *           type: string
  *           description: The category id of the product
  *           example: "5"
- *         userId:
- *           type: string
- *           description: The user id of the product
- *           example: "1"
  *         location:
  *           type: string
  *           description: The user latitude and longitude
@@ -55,7 +61,6 @@ const productsRouter = express.Router();
  *         images: ["url:jacket.jpg", "thumbNailUrl"]
  *         price: "100"
  *         categoryId: "5"
- *         userId: "1"
  *         location: "-1.9706° S,30.0474° E"
  *         description: "This is a good product you can afford easily."
  */
@@ -73,6 +78,8 @@ const productsRouter = express.Router();
  *   post:
  *     summary: Create a new product
  *     tags: [Products]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *          required: true
  *          content:
@@ -91,7 +98,12 @@ const productsRouter = express.Router();
  *          description: Internal Server Error
  */
 
-productsRouter.post("/addNewProduct", productImagesUpload, addNewProduct);
+productsRouter.post(
+  "/addNewProduct",
+  verifyToken,
+  productImagesUpload,
+  addNewProduct
+);
 
 /**
  * @swagger
@@ -115,5 +127,61 @@ productsRouter.post("/addNewProduct", productImagesUpload, addNewProduct);
  */
 
 productsRouter.get("/getAllProducts", getAllProducts);
+
+/**
+ * @swagger
+ *  /AguraMarket/products/getUserProducts:
+ *   get:
+ *     summary: Returns the list of all products of a user
+ *     tags: [Products]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *          description: The products found successfully
+ *          content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/products'
+ *       404:
+ *          description: Not found
+ *       500:
+ *          description: Internal Server Error
+ */
+
+productsRouter.get("/getUserProducts", verifyToken, getUserProducts);
+/**
+ * @swagger
+ *  /AguraMarket/products/deleteProduct/{id}:
+ *   delete:
+ *     summary: Delete product
+ *     tags: [Products]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *        - in: path
+ *          name: id
+ *          schema:
+ *             type: string
+ *          required: true
+ *          description: The product id
+ *     responses:
+ *       200:
+ *          description: The products deleted successfully
+ *          content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/products'
+ *       404:
+ *          description: Not found
+ *       500:
+ *          description: Internal Server Error
+ */
+
+productsRouter.delete("/deleteProduct/:id", verifyToken, deleteProduct);
 
 export default productsRouter;

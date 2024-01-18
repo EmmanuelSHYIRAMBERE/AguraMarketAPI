@@ -3,6 +3,8 @@ import cloudinary from "../../utilities/cloudinary";
 import { Product } from "../../model/productModel.js";
 
 export const addNewProduct = catchAsyncError(async (req, res, next) => {
+  const userID = req.user._id;
+
   const productImagesArray = [];
 
   if (req.files["images"]) {
@@ -18,6 +20,8 @@ export const addNewProduct = catchAsyncError(async (req, res, next) => {
       }
     }
   }
+
+  req.body.userId = userID;
 
   const product = await Product.create({
     ...req.body,
