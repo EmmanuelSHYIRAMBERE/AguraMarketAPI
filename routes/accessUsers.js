@@ -10,6 +10,7 @@ import {
 } from "../controllers/Users";
 import { signUp, logIn } from "../controllers/Authentication";
 import productImagesUpload from "../middleware/productMulter";
+import { getMessages, sendMessage } from "../controllers/Messages";
 
 /**
  * @swagger
@@ -90,6 +91,21 @@ import productImagesUpload from "../middleware/productMulter";
  *         phoneNo: "+25070000001"
  *         location: Updated Address
  *         expoPushToken: Updated expoPushToken
+ *     messages:
+ *       type: object
+ *       required:
+ *         - message
+ *         - productId
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: The message body of the user
+ *         productId:
+ *           type: string
+ *           description: The product Id
+ *       example:
+ *         message: "Hello, this is my message body"
+ *         productId: "GH21"
  */
 
 /**
@@ -97,6 +113,13 @@ import productImagesUpload from "../middleware/productMulter";
  * tags:
  *   name: Users
  *   description: The user authorization managing API
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Messages
+ *   description: The message managing API
  */
 
 /**
@@ -279,5 +302,53 @@ usersRouter.put("/userupdate", verifyToken, productImagesUpload, updateUser);
  */
 
 usersRouter.delete("/userdelete/:id", verifyToken, deleteUser);
+
+/**
+ * @swagger
+ * /AguraMarket/users/sendMessage:
+ *   post:
+ *     summary: Create a new user
+ *     tags: [Messages]
+ *     requestBody:
+ *          required: true
+ *          content:
+ *            application/json:
+ *               schema:
+ *                   $ref: '#/components/schemas/messages'
+ *     responses:
+ *       201:
+ *          description: The message sent successfully
+ *          content:
+ *             application/json:
+ *               schema:
+ *                   $ref: '#/components/schemas/messages'
+ *       500:
+ *          description: Internal Server Error
+ */
+
+usersRouter.post("/sendMessage", sendMessage);
+
+/**
+ * @swagger
+ * /AguraMarket/users/getMessages:
+ *   get:
+ *     summary: Returns all messages
+ *     tags: [Messages]
+ *     responses:
+ *       200:
+ *          description: The messages found
+ *          content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/messages'
+ *       404:
+ *          description: Not found
+ *       500:
+ *          description: Internal Server Error
+ */
+
+usersRouter.get("/getMessages", getMessages);
 
 export default usersRouter;
