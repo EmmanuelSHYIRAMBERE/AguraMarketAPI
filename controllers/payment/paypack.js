@@ -1,6 +1,6 @@
-import { Parkings, Reservations } from "../../models";
-import { catchAsyncError } from "../../utility";
-import errorHandler from "../../utility/errorHandlerClass";
+import { Product } from "../../model";
+import { catchAsyncError } from "../../utilities";
+import errorHandler from "../../utilities/errorHandlerClass";
 
 const PaypackJs = require("paypack-js").default;
 require("dotenv").config();
@@ -12,13 +12,13 @@ const paypack = PaypackJs.config({
 export const cashIn = catchAsyncError(async (req, res) => {
   const id = req.params.id;
 
-  const reservation = await Reservations.findById({ _id: id });
+  const product = await Product.findById({ _id: id });
 
-  if (!reservation) {
-    return new errorHandler(`Reservation with id: ${id} not found.`, 404);
+  if (!product) {
+    return new errorHandler(`product with id: ${id} not found.`, 404);
   }
 
-  const payableAmount = reservation.totalPrice;
+  const payableAmount = product.price;
 
   const response = await paypack.cashin({
     number: req.body.number,
@@ -26,22 +26,10 @@ export const cashIn = catchAsyncError(async (req, res) => {
     environment: "production",
   });
 
-  const slot = await Parkings.findOne({ _id: reservation.slotID });
-
-  if (!slot) {
-    return new errorHandler(`There's no slot found.`, 404);
-  }
-
-  console.log(slot);
-
-  slot.status = true;
-
-  slot.save();
-
   res.status(200).json({
     status: "payment request sent to your phone number, please confirm it.",
     data: response.data,
-    reserveDetails: reservation,
+    product,
   });
 });
 export const cashOut = catchAsyncError(async (req, res) => {
